@@ -16,8 +16,8 @@
             font-family: Arial, sans-serif;
         }
         .card {
-            width: 300px;
-            height: 400px;
+            width: 600px;
+            height: 800px;
             background-color: white;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -78,8 +78,11 @@
             const card = document.getElementById('hotelCard');
             if (currentIndex < hotelList.length) {
                 const hotel = hotelList[currentIndex];
-                card.textContent = `${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']}
-                - ${hotel['Rating']} - ${hotel['Amenities']}`;
+                card.innerHTML = `
+                    <dix><img src="static/images/HotelImage1.png" alt="Hotel Image" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; object-fit: cover;"></div>
+                    <div>${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']}</div>
+                    <div>Rating: ${hotel['Rating']}</div>
+                    <div>Amenities: ${hotel['Amenities']}</div>`;
             } else {
                 card.textContent = "No more hotels!";
             }
