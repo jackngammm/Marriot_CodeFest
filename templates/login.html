@@ -2,16 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #5C0E1E, #3E0A14); /* Darker Marriott red gradient */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: fadeIn 1s ease; /* Fade-in animation */
+        }
+        .container {
+            background: #FFFFFF; /* White background for the container */
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: slideIn 0.5s forwards; /* Slide-in animation */
+            animation-delay: 0.5s; /* Delay for the container animation */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        h1 {
+            text-align: center;
+            color: #333; /* Darker font color */
+        }
+        label {
+            margin-top: 1rem;
+            display: block;
+            color: #333; /* Darker font color */
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s; /* Transition for input focus */
+        }
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #C8102E; /* Change border color on focus */
+            outline: none; /* Remove default outline */
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #C8102E; /* Marriott red */
+            color: white; /* Lighter text color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s; /* Transition for button hover */
+        }
+        button:hover {
+            background-color: #a60f2c; /* Darker red for hover */
+        }
+        .error {
+            color: #d9534f; /* Bootstrap error red */
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Login</h1>
-    <form method="POST">
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
+    <div class="container">
+        <h1>Login</h1>
+        <form method="POST">
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" name="password" required>
+            <button type="submit">Login</button>
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+        </form>
+    </div>
 </body>
 </html>

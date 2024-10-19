@@ -14,7 +14,22 @@ def home():
 
 
 #Log in Page
-
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Check if both username and password are in the form data
+        email = request.form.get('email')  # Use .get() to avoid KeyError
+        password = request.form.get('password')
+        
+        # Basic authentication check (replace this with your own logic)
+        if email == "user@user" and password == "pass":
+            #session['user'] = email  # Store user email in session
+            return redirect(url_for('preferences'))
+        else:
+            return render_template('login.html', error="Invalid credentials. Please try again.")
+    
+    # For GET requests, simply render the login page
+    return render_template('login.html')
 # Preferences Page
 @app.route('/preferences', methods=['GET', 'POST'])
 def preferences():
