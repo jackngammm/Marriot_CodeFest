@@ -69,7 +69,8 @@
             const card = document.getElementById('hotelCard');
             if (currentIndex < hotelList.length) {
                 const hotel = hotelList[currentIndex];
-                card.textContent = `${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']}`;
+                card.textContent = `${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']} 
+                -  $${hotel['Ratings']} - $${hotel['Amenities']}`;
             } else {
                 card.textContent = "No more hotels!";
             }
