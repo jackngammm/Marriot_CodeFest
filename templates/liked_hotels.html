@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liked Hotels - Hotel Swipe App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .hotel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .hotel h2 {
+            margin: 0;
+        }
+        .hotel p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liked Hotels</h1>
+    <div id="likedHotelsContainer">
+        {% if liked_hotels %}
+            {% for hotel in liked_hotels %}
+                <div class="hotel">
+                    <h2>{{ hotel['Hotel_Name'] }}</h2>
+                    <p>Location: {{ hotel['Location'] }}</p>
+                    <p>Price: ${{ hotel['Price_Per_Night'] }}</p>
+                    <p>Rating: {{ hotel['Rating'] }} stars</p>
+                    <p>Amenities: {{ hotel['Amenities'] }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No hotels liked yet!</p>
+        {% endif %}
+    </div>
+</body>
+</html>
