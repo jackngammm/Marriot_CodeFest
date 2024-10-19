@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import pandas as pd
 
+
 app = Flask(__name__)
 app.secret_key = '1percent'
 
@@ -14,6 +15,7 @@ def home():
 
 
 #Log in Page
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -32,15 +34,16 @@ def login():
     return render_template('login.html')
 # Preferences Page
 @app.route('/preferences', methods=['GET', 'POST'])
+
 def preferences():
 
-    
-    if request.method == 'POST':
 
+    if request.method == 'POST':
+        
         location = request.form['location']
         min_price = float(request.form['min_price'])
         max_price = float(request.form['max_price'])
-        
+       
         # Store preferences in session for access across routes
         session['preferences'] = {
             'location': location,
@@ -61,22 +64,22 @@ def hotels():
     # Filter hotels based on location and price range
     filtered_hotels = hotel_data[
         (hotel_data['Location'].str.contains(location, case=False, na=False)) &
-        (hotel_data['Price_Per_Night'] >= min_price) & 
+        (hotel_data['Price_Per_Night'] >= min_price) &
         (hotel_data['Price_Per_Night'] <= max_price)
     ]
-
+    
     hotels_list = filtered_hotels.to_dict(orient='records')
     return render_template('hotels.html', hotels=hotels_list)
 
-
-
-
 #This is the saved page
+
 @app.route('/save_liked_hotels', methods=['POST'])
 def save_liked_hotels():
     liked_hotels = request.json.get('liked_hotels', [])
     session['liked_hotels'] = liked_hotels
     return 'Liked hotels saved successfully!'
+
+
 
 
 @app.route('/liked_hotels')
@@ -87,6 +90,16 @@ def liked_hotels():
 
 
 
+@app.route('/chat/<hotel_name>', methods=['GET', 'POST'])
+def chat(hotel_name):
+    user_message = None
+    bot_response = None
+
+    if request.method == 'POST':
+        user_message = request.form.get('message')
+        bot_response = f"Chatbot response to: {user_message}"  # Placeholder response logic
+
+    return render_template('chat.html', hotel_name=hotel_name, user_message=user_message, bot_response=bot_response)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -6,56 +6,89 @@
     <title>Swipe Hotels - Hotel Swipe App</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(to right, #3E0A14, #5C0E1E);
+            animation: fadeIn 1s ease;
+            color: #f5f5f5;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .card {
-            width: 600px;
-            height: 800px;
-            background-color: white;
+            width: 30%;
+            max-width: 800px;
+            height: auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
-            padding: 20px;
             text-align: center;
-            margin-bottom: 20px;
+            padding: 30px;
+            margin: 50px 0 40px; /* Increased top and bottom margins */
             transition: transform 0.3s, opacity 0.3s;
+            font-size: 1.2em;
         }
         .buttons {
             display: flex;
-            justify-content: space-between;
-            width: 200px;
-            margin-bottom: 10px;
+            justify-content: space-around;
+            width: 70%;
+            max-width: 800px;
+            margin-top: 30px;
         }
         .button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
             border: none;
-            border-radius: 5px;
-            margin: 0 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 20px;
+            transition: background-color 0.3s, transform 0.3s;
         }
         .like {
-            background-color: #4caf50;
+            background: linear-gradient(to right, #4CAF50, #45A049);
             color: white;
+        }
+        .like:hover {
+            background: linear-gradient(to right, #45A049, #4CAF50);
+            transform: translateY(-3px);
         }
         .dislike {
-            background-color: #f44336;
+            background: linear-gradient(to right, #F44336, #D32F2F);
             color: white;
         }
+        .dislike:hover {
+            background: linear-gradient(to right, #D32F2F, #F44336);
+            transform: translateY(-3px);
+        }
         .view-liked {
-            background-color: #ff9800;
+            background: linear-gradient(to right, #FF9800, #FF5722);
             color: white;
-            margin-top: 10px;
+            margin-top: 40px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .view-liked:hover {
+            background: linear-gradient(to right, #FF5722, #FF9800);
+            transform: translateY(-3px);
         }
     </style>
 </head>
@@ -65,37 +98,43 @@
         <button class="button dislike" id="dislikeButton">Dislike</button>
         <button class="button like" id="likeButton">Like</button>
     </div>
-    <!-- Add the 'View Liked Hotels' button -->
-    <button class="button view-liked" onclick="window.location.href='/liked_hotels'">View Liked Hotels</button>
+    <button class="view-liked" onclick="window.location.href='/liked_hotels'">Hotel Matches</button>
 
     <script>
         const hotelList = JSON.parse('{{ hotels|tojson|safe }}');
+        const imageUrls = [
+            'static/images/HotelImage1.png',
+            'static/images/HotelImage2.png',
+            'static/images/HotelImage3.png'
+        ];
         let currentIndex = 0;
-        let likedHotels = []; // Array to store liked hotels
+        let likedHotels = [];
 
-        // Function to display the current hotel
+        function getRandomImage() {
+            const randomIndex = Math.floor(Math.random() * imageUrls.length);
+            return imageUrls[randomIndex];
+        }
+
         function displayHotel() {
             const card = document.getElementById('hotelCard');
             if (currentIndex < hotelList.length) {
                 const hotel = hotelList[currentIndex];
                 card.innerHTML = `
-                    <dix><img src="static/images/HotelImage1.png" alt="Hotel Image" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; object-fit: cover;"></div>
-                    <div>${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']}</div>
-                    <div>Rating: ${hotel['Rating']}</div>
+                    <div><img src="${getRandomImage()}" alt="Hotel Image" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 20px; object-fit: cover;"></div>
+                    <div><strong>${hotel['Hotel_Name']}</strong> - ${hotel['Location']} - $${hotel['Price_Per_Night']}</div>
+                    <div>Rating: ${hotel['Rating']} stars</div>
                     <div>Amenities: ${hotel['Amenities']}</div>`;
             } else {
                 card.textContent = "No more hotels!";
             }
         }
 
-        // Function to handle liking a hotel
         function likeHotel() {
             if (currentIndex < hotelList.length) {
-                likedHotels.push(hotelList[currentIndex]); // Add to liked hotels
+                likedHotels.push(hotelList[currentIndex]);
                 currentIndex++;
                 displayHotel();
             }
-            // Save liked hotels to the backend
             fetch('/save_liked_hotels', {
                 method: 'POST',
                 headers: {
@@ -105,17 +144,13 @@
             });
         }
 
-        // Function to handle disliking a hotel
         function dislikeHotel() {
             currentIndex++;
             displayHotel();
         }
 
-        // Event listeners for Like and Dislike buttons
         document.getElementById('likeButton').addEventListener('click', likeHotel);
         document.getElementById('dislikeButton').addEventListener('click', dislikeHotel);
-
-        // Initialize the app
         document.addEventListener('DOMContentLoaded', displayHotel);
     </script>
 </body>
