@@ -7,29 +7,40 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #5C0E1E, #3E0A14); /* Darker Marriott red gradient */
+            background: linear-gradient(to right, #5C0E1E, #3E0A14);
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            animation: fadeIn 1s ease; /* Fade-in animation */
-        }
-        .container {
-            background: #FFFFFF; /* White background for the container */
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            width: 300px;
-            transform: translateY(-20px);
-            opacity: 0;
-            animation: slideIn 0.5s forwards; /* Slide-in animation */
-            animation-delay: 0.5s; /* Delay for the container animation */
+            animation: fadeIn 1s ease;
+            position: relative;
+            overflow: hidden;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+        .background-design {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('background-pattern.png'); /* Optional background pattern */
+            opacity: 0.1; /* Light background pattern */
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            border-radius: 15px;
+            padding: 2.5rem; /* Increased padding for a spacious feel */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            width: 360px; /* Increased width for the container */
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+            animation-delay: 0.5s;
+            backdrop-filter: blur(10px); /* Blurs the background behind the container */
         }
         @keyframes slideIn {
             from { transform: translateY(-20px); opacity: 0; }
@@ -37,50 +48,56 @@
         }
         h1 {
             text-align: center;
-            color: #333; /* Darker font color */
+            color: #f5f5f5; /* Lighter font color */
+            margin-bottom: 1.5rem; /* Spacing below heading */
         }
         label {
-            margin-top: 1rem;
+            margin-top: 1.5rem; /* Increased top margin for better spacing */
             display: block;
-            color: #333; /* Darker font color */
+            color: #f5f5f5; /* Lighter font color */
         }
         input[type="email"],
         input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
+            width: calc(100% - 24px); /* Full width minus padding */
+            padding: 10px; /* Decreased padding for a shorter height */
+            margin-top: 8px; /* Increased margin for spacing */
             border: 1px solid #ccc;
             border-radius: 5px;
-            transition: border-color 0.3s; /* Transition for input focus */
+            transition: border-color 0.3s, box-shadow 0.3s; /* Transition for input focus */
+            font-size: 16px; /* Increased font size for readability */
+            height: 20px; /* Set a more appropriate height */
         }
         input[type="email"]:focus,
         input[type="password"]:focus {
             border-color: #C8102E; /* Change border color on focus */
+            box-shadow: 0 0 5px rgba(200, 16, 46, 0.5); /* Shadow effect on focus */
             outline: none; /* Remove default outline */
         }
         button {
             width: 100%;
-            padding: 10px;
-            background-color: #C8102E; /* Marriott red */
-            color: white; /* Lighter text color */
+            padding: 12px; /* Increased padding for comfort */
+            background: linear-gradient(to right, #C8102E, #A60F2C); /* Gradient background for button */
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 1rem;
+            margin-top: 1.5rem; /* Increased spacing above button */
             font-weight: bold;
-            transition: background-color 0.3s; /* Transition for button hover */
+            transition: background 0.3s, transform 0.3s; /* Transition for hover and scaling */
         }
         button:hover {
-            background-color: #a60f2c; /* Darker red for hover */
+            background: linear-gradient(to right, #A60F2C, #C8102E); /* Inverted gradient on hover */
+            transform: translateY(-3px); /* Lift effect on hover */
         }
         .error {
-            color: #d9534f; /* Bootstrap error red */
+            color: #d9534f; /* Error message color */
             text-align: center;
             margin-top: 10px;
         }
     </style>
 </head>
 <body>
+    <div class="background-design"></div>
     <div class="container">
         <h1>Login</h1>
         <form method="POST">
