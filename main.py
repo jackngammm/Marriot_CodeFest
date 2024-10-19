@@ -18,7 +18,10 @@ def home():
 # Preferences Page
 @app.route('/preferences', methods=['GET', 'POST'])
 def preferences():
+
+    
     if request.method == 'POST':
+
         location = request.form['location']
         min_price = float(request.form['min_price'])
         max_price = float(request.form['max_price'])
@@ -49,6 +52,24 @@ def hotels():
 
     hotels_list = filtered_hotels.to_dict(orient='records')
     return render_template('hotels.html', hotels=hotels_list)
+
+
+
+
+#This is the saved page
+@app.route('/save_liked_hotels', methods=['POST'])
+def save_liked_hotels():
+    liked_hotels = request.json.get('liked_hotels', [])
+    session['liked_hotels'] = liked_hotels
+    return 'Liked hotels saved successfully!'
+
+
+@app.route('/liked_hotels')
+def liked_hotels():
+    liked_hotel_list = session.get('liked_hotels', [])
+    return render_template('liked_hotels.html', liked_hotels=liked_hotel_list)
+
+
 
 
 

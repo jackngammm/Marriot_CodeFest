@@ -34,6 +34,7 @@
             display: flex;
             justify-content: space-between;
             width: 200px;
+            margin-bottom: 10px;
         }
         .button {
             padding: 10px 20px;
@@ -51,6 +52,11 @@
             background-color: #f44336;
             color: white;
         }
+        .view-liked {
+            background-color: #ff9800;
+            color: white;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -59,37 +65,52 @@
         <button class="button dislike" id="dislikeButton">Dislike</button>
         <button class="button like" id="likeButton">Like</button>
     </div>
+    <!-- Add the 'View Liked Hotels' button -->
+    <button class="button view-liked" onclick="window.location.href='/liked_hotels'">View Liked Hotels</button>
 
     <script>
         const hotelList = JSON.parse('{{ hotels|tojson|safe }}');
         let currentIndex = 0;
+        let likedHotels = []; // Array to store liked hotels
 
         // Function to display the current hotel
         function displayHotel() {
             const card = document.getElementById('hotelCard');
             if (currentIndex < hotelList.length) {
                 const hotel = hotelList[currentIndex];
-                card.textContent = `${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']} 
-                -  $${hotel['Rating']} - $${hotel['Amenities']}`;
+                card.textContent = `${hotel['Hotel_Name']} - ${hotel['Location']} - $${hotel['Price_Per_Night']}
+                - ${hotel['Rating']} - ${hotel['Amenities']}`;
             } else {
                 card.textContent = "No more hotels!";
             }
         }
 
-        // Function to handle the next hotel display
-        function handleNextHotel(action) {
+        // Function to handle liking a hotel
+        function likeHotel() {
             if (currentIndex < hotelList.length) {
-                console.log(`User ${action}d: ${hotelList[currentIndex]['Hotel_Name']}`);
+                likedHotels.push(hotelList[currentIndex]); // Add to liked hotels
                 currentIndex++;
                 displayHotel();
-            } else {
-                alert("No more hotels to show!");
             }
+            // Save liked hotels to the backend
+            fetch('/save_liked_hotels', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ liked_hotels: likedHotels })
+            });
+        }
+
+        // Function to handle disliking a hotel
+        function dislikeHotel() {
+            currentIndex++;
+            displayHotel();
         }
 
         // Event listeners for Like and Dislike buttons
-        document.getElementById('likeButton').addEventListener('click', () => handleNextHotel('like'));
-        document.getElementById('dislikeButton').addEventListener('click', () => handleNextHotel('dislike'));
+        document.getElementById('likeButton').addEventListener('click', likeHotel);
+        document.getElementById('dislikeButton').addEventListener('click', dislikeHotel);
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', displayHotel);
