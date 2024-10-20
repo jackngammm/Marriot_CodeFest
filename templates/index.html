@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Hotel Swipe App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"> <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #2E0A14, #4C0E1E);
             color: #f5f5f5;
             margin: 0;
@@ -30,8 +32,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('background-pattern.png'); /* Your background pattern */
-            opacity: 0.1; /* More visible background */
+            background-image: url('background-pattern.png');
+            opacity: 0.1;
             z-index: 1;
         }
         .container {
@@ -40,11 +42,11 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 15px;
             padding: 40px 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* Deeper shadow for more depth */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             text-align: center;
             max-width: 600px;
             margin: 20px;
-            backdrop-filter: blur(10px); /* Blurs the background behind the container */
+            backdrop-filter: blur(10px);
         }
         h1 {
             font-size: 3em;
@@ -52,7 +54,7 @@
             animation: slideIn 0.5s ease forwards;
             opacity: 0;
             transform: translateY(-20px);
-            color: #FF9800; /* Accent color for header */
+            color: #FF9800;
         }
         @keyframes slideIn {
             from { transform: translateY(-20px); opacity: 0; }
@@ -64,7 +66,7 @@
             opacity: 0;
             animation: fadeInUp 0.7s forwards;
             animation-delay: 0.3s;
-            color: #f5f5f5; /* Consistent text color */
+            color: #f5f5f5;
         }
         @keyframes fadeInUp {
             from { transform: translateY(20px); opacity: 0; }
@@ -72,7 +74,7 @@
         }
         a {
             text-decoration: none;
-            background: linear-gradient(to right, #C8102E, #A60F2C); /* Gradient background for button */
+            background: linear-gradient(to right, #C8102E, #A60F2C);
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
@@ -83,18 +85,18 @@
             display: inline-block;
         }
         a:hover {
-            background: linear-gradient(to right, #A60F2C, #C8102E); /* Inverted gradient on hover */
+            background: linear-gradient(to right, #A60F2C, #C8102E);
             transform: translateY(-3px);
         }
         .register-link {
             display: block;
-            margin-top: 10px; /* Spacing above register link */
+            margin-top: 10px;
             font-size: 1em;
-            color: #FFD700; /* Yellow color for emphasis */
-            text-decoration: underline; /* Underline for visibility */
+            color: #FFD700;
+            text-decoration: underline;
         }
         .register-button {
-            background: linear-gradient(to right, #C8102E, #A60F2C); /* Gradient background for button */
+            background: linear-gradient(to right, #C8102E, #A60F2C);
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
@@ -105,7 +107,7 @@
             display: inline-block;
         }
         .register-button:hover {
-            background: linear-gradient(to right, #A60F2C, #C8102E); /* Inverted gradient on hover */
+            background: linear-gradient(to right, #A60F2C, #C8102E);
             transform: translateY(-3px);
         }
     </style>
@@ -113,13 +115,20 @@
 <body>
     <div class="background-design"></div>
     <div class="container">
-        <h1>Welcome to Hotel Swipe 🎉</h1>
-        <p>Your one-stop solution for finding and booking hotels that match your preferences! 🏨</p>
-        <p>Whether you're traveling for business or leisure, we provide a seamless experience to help you find the perfect stay. ✈️</p>
-        <p>Set your location, budget, and other preferences to get tailored hotel recommendations just for you. 💼</p>
-        <p>Join us today and make your travel planning easier! 🌍</p>
-        <a href="{{ url_for('login') }}">LogIn to Your Account! 🔑</a>
-        <a href="{{ url_for('register') }}" class="register-button">Register Now! ✍️</a> <!-- Styled Register Button -->
+        <h1>1% by Marriot Bonvoy <i class="fas fa-hotel"></i></h1>
+        <p>Your one-stop solution for finding and booking hotels that match your preferences! <i class="fas fa-bed"></i></p>
+        <p>Whether you're traveling for business or leisure, we provide a seamless experience to help you find the perfect stay. <i class="fas fa-plane"></i></p>
+        <p>Set your location, budget, and other preferences to get tailored hotel recommendations just for you. <i class="fas fa-briefcase"></i></p>
+        <p>Join us today and make your travel planning easier! <i class="fas fa-globe"></i></p>
+
+        <!-- Login and Register Buttons -->
+        <form method="POST" action="{{ url_for('login') }}">
+            <a href="{{ url_for('login') }}" class="register-button">Log In to Your Account <i class="fas fa-key"></i></a>
+        </form>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <a href="{{ url_for('register') }}" class="register-button">Register Now <i class="fas fa-pen"></i></a>
+        </form>
     </div>
 </body>
 </html>

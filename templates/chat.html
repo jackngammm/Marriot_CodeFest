@@ -124,6 +124,9 @@
             <!-- Messages will be appended here -->
         </div>
         <form id="chat-form" class="input-container" onsubmit="sendMessage(event)">
+            <!-- CSRF token placeholder -->
+            <input type="hidden" name="csrf_token" value="placeholder_token">
+
             <input type="text" id="message-input" class="message-input" placeholder="Type your message..." required>
             <button type="submit" class="send-button">Send</button>
         </form>

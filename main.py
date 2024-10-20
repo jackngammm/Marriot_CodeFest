@@ -1,15 +1,16 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import pandas as pd
-import re
-from flask import Flask, session, redirect, url_for, make_response
 from datetime import timedelta
 import logging
 from logging.handlers import RotatingFileHandler
-from flask import Flask, request, session, redirect, url_for
+import re
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
 app.secret_key = '1percent'
+stored_hashed_password = generate_password_hash("pass", method='pbkdf2:sha256')
+
 
 # 1. Add Session Management Configuration
 app.config['SESSION_COOKIE_SECURE'] = True  # Use HTTPS for cookie transmission (in production)
@@ -17,11 +18,24 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to coo
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Limit cross-site cookie transmission
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)  # Set session timeout to 15 minutes
 
+def sanitize_input(user_input):
+    # Allow only alphanumeric characters and spaces
+    return re.sub(r'[^\w\s]', '', user_input)
+
+
 @app.before_request
 def make_session_permanent():
+    
     session.permanent = True  # Ensure sessions are refreshed on each request
 
-# Your existing routes and logic here...
+# Placeholder CSRF logging function
+@app.before_request
+def log_csrf_token():
+    csrf_token = session.get('csrf_token')
+    if csrf_token:
+        app.logger.info(f"CSRF Token (Placeholder): {csrf_token}")
+    else:
+        app.logger.info("No CSRF Token found (Placeholder).")
 
 # 2. Add Security Headers Implementation
 @app.after_request
@@ -38,12 +52,21 @@ def add_security_headers(response):
     )
     return response
 
+
+# Placeholder CSRF logging function
+@app.before_request
+def log_csrf_token():
+    csrf_token = session.get('csrf_token')
+    if csrf_token:
+        app.logger.info(f"CSRF Token (Placeholder): {csrf_token}")
+    else:
+        app.logger.info("No CSRF Token found (Placeholder).")
+
 # Set up rotating log files
 log_file = 'app.log'
 handler = RotatingFileHandler(log_file, maxBytes=10000, backupCount=5)
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
-
 
 # Load the dataset
 hotel_data = pd.read_csv('marriott_hotels_dataset.csv')
@@ -53,85 +76,95 @@ hotel_data = pd.read_csv('marriott_hotels_dataset.csv')
 def home():
     return render_template('index.html')
 
-
-#Log in Page
-
+# Log in Page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'attempts' not in session:
+        session['attempts'] = 0
+
     if request.method == 'POST':
-        # Check if both username and password are in the form data
-        email = request.form.get('email')  # Use .get() to avoid KeyError
-        password = request.form.get('password')
-        
-        # Basic authentication check (replace this with your own logic)
-        if email == "user@user" and password == "pass":
-            #session['user'] = email  # Store user email in session
-            app.logger.info(f"Successful login for user: {email}")
+        login_type = request.form.get('login-type')  # Determine login type
 
-            return redirect(url_for('preferences'))
-        else:
-            app.logger.warning(f"Failed login attempt for email: {email}")
+        if session['attempts'] >= 5:
+            error = "Too many login attempts. Try again later."
+            return render_template('login.html', error=error)
 
-            return render_template('login.html', error="Invalid credentials. Please try again.")
-    
-    # For GET requests, simply render the login page
+        # Email-based login with hashed password verification
+        if login_type == 'email':
+            email = sanitize_input(request.form.get('email'))
+            password = sanitize_input(request.form.get('password'))
+
+            # Check email and hashed password
+            if email == "user@user" and check_password_hash(stored_hashed_password, password):
+                session['attempts'] = 0  # Reset attempts on successful login
+                app.logger.info(f"Successful login for user: {email}")
+                return redirect(url_for('preferences'))
+            else:
+                session['attempts'] += 1
+                error = "Invalid credentials. Please try again."
+                return render_template('login.html', error=error)
+
+        # Phone-based login (no hashing needed)
+        elif login_type == 'phone':
+            phone = sanitize_input(request.form.get('phone'))
+            otp = sanitize_input(request.form.get('otp'))
+
+            # Check phone and OTP
+            if phone == "123456789" and otp == "123456":
+                session['attempts'] = 0  # Reset attempts on successful login
+                app.logger.info(f"Successful login for phone: {phone}")
+                return redirect(url_for('preferences'))
+            else:
+                session['attempts'] += 1
+                error = "Invalid phone or OTP. Please try again."
+                return render_template('login.html', error=error)
+
     return render_template('login.html')
 
 
+# Register Page
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        if request.form.get('registration-type') == 'email':
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')    
+        registration_type = request.form.get('registration-type')
+
+        if registration_type == 'email':
+            username = sanitize_input(request.form.get('username'))
+            email = sanitize_input(request.form.get('email'))
+            password = sanitize_input(request.form.get('password'))
             app.logger.info(f"New user registration: {email}")
 
-            # Add your logic to handle email registration here
-        elif request.form.get('registration-type') == 'phone':
-            phone = request.form.get('phone')
-            otp = request.form.get('otp')
+            # Add logic to handle email registration here
+
+        elif registration_type == 'phone':
+            phone = sanitize_input(request.form.get('phone'))
+            otp = sanitize_input(request.form.get('otp'))
             app.logger.info(f"New user registration: {phone}")
 
-            # Add your logic to handle phone registration here
+            # Add logic to handle phone registration here
 
-        # Redirect or render appropriate response based on registration logic
-        return redirect(url_for('login'))  # Change this based on your logic
+        return redirect(url_for('login'))
 
     return render_template('register.html')
 
-@app.route('/registration_success')
-def registration_success():
-    return "Registration successful! You can now log in."  # Placeholder message
-
 # Preferences Page
-@app.route('/preferences', methods=['GET', 'POST'])
-
 @app.route('/preferences', methods=['GET', 'POST'])
 def preferences():
     if request.method == 'POST':
         try:
-            location = request.form['location']
+            location = sanitize_input(request.form['location'])
             min_price = float(request.form['min_price'])
             max_price = float(request.form['max_price'])
 
-            # Store preferences in session for access across routes
             session['preferences'] = {
                 'location': location,
                 'min_price': min_price,
                 'max_price': max_price
             }
 
-            # Log successful preference setting
-            app.logger.info(f"Preferences set: Location - {location}, "
-                            f"Min Price - {min_price}, Max Price - {max_price}, "
-                            f"User IP - {request.remote_addr}")
-
             return redirect(url_for('hotels'))
-
         except Exception as e:
-            # Log any errors during setting preferences
-            app.logger.error(f"Error setting preferences: {e}, User IP - {request.remote_addr}")
+            app.logger.error(f"Error setting preferences: {e}")
             return render_template('preferences.html', error="An error occurred while setting preferences. Please try again.")
 
     return render_template('preferences.html')
@@ -154,25 +187,20 @@ def hotels():
     hotels_list = filtered_hotels.to_dict(orient='records')
     return render_template('hotels.html', hotels=hotels_list)
 
-#This is the saved page
-
+# Save Liked Hotels
 @app.route('/save_liked_hotels', methods=['POST'])
 def save_liked_hotels():
     liked_hotels = request.json.get('liked_hotels', [])
     session['liked_hotels'] = liked_hotels
     return 'Liked hotels saved successfully!'
 
-
-
-
+# Liked Hotels Page
 @app.route('/liked_hotels')
 def liked_hotels():
     liked_hotel_list = session.get('liked_hotels', [])
     return render_template('liked_hotels.html', liked_hotels=liked_hotel_list)
 
-
-
-
+# Chat Page
 @app.route('/chat/<hotel_name>', methods=['GET', 'POST'])
 def chat(hotel_name):
     user_message = None
@@ -180,18 +208,17 @@ def chat(hotel_name):
 
     if request.method == 'POST':
         user_message = request.form.get('message')
-        bot_response = f"Chatbot response to: {user_message}"  # Placeholder response logic
+        bot_response = f"Chatbot response to: {user_message}"
 
     return render_template('chat.html', hotel_name=hotel_name, user_message=user_message, bot_response=bot_response)
 
-
+# Logout Route
 @app.route('/logout')
 def logout():
     user = session.get('user', 'Unknown user')
     session.clear()  # Clears all session data
     app.logger.info(f"User {user} logged out")
-    return redirect(url_for('home'))  # Replace 'home' with your homepage route
-
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)
