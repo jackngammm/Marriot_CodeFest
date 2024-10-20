@@ -52,6 +52,7 @@
             max-width: 80%;
             position: relative;
             word-wrap: break-word;
+            transition: opacity 1s ease, transform 1s ease;
         }
         .user-message {
             align-self: flex-end;
@@ -111,22 +112,64 @@
         .back-button:hover {
             background: #C8102E;
         }
+        .message {
+            transition: all 1s ease;
+        }
     </style>
 </head>
 <body>
     <h1>Chat with {{ hotel_name }}</h1>
     <div class="chat-container">
-        <div class="messages">
-            {% if user_message %}
-                <div class="message user-message">{{ user_message }}</div>
-                <div class="message bot-message">{{ bot_response }}</div>
-            {% endif %}
+        <div class="messages" id="messages">
+            <!-- Messages will be appended here -->
         </div>
-        <form method="POST" class="input-container">
-            <input type="text" name="message" class="message-input" placeholder="Type your message..." required>
+        <form id="chat-form" class="input-container" onsubmit="sendMessage(event)">
+            <input type="text" id="message-input" class="message-input" placeholder="Type your message..." required>
             <button type="submit" class="send-button">Send</button>
         </form>
     </div>
     <button class="back-button" onclick="window.location.href='/liked_hotels'">Back to Liked Hotels</button>
+
+    <script>
+        function sendMessage(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const input = document.getElementById('message-input');
+            const userMessage = input.value;
+
+            // Append user message to chat
+            appendMessage('user', userMessage);
+
+            // Simulate bot response (replace with your logic)
+            const botResponse = getBotResponse(userMessage);
+            appendMessage('bot', botResponse);
+
+            // Clear the input
+            input.value = '';
+        }
+
+        function appendMessage(role, content) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.textContent = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
+        }
+
+        function getBotResponse(message) {
+            // Basic responses (replace with more logic if needed)
+            const responses = {
+                "hello": "Hi there! How can I help you today?",
+                "amenities": "We offer free Wi-Fi, breakfast, and a swimming pool.",
+                "location": "We are located in the city center, close to major attractions.",
+                "price": "Our prices start from $99 per night, depending on the season.",
+                "availability": "Please provide your check-in and check-out dates for availability.",
+                "help": "I'm here to assist you with any questions you may have."
+            };
+
+            return responses[message.toLowerCase()] || "I'm sorry, I don't understand that. Can you ask something else?";
+        }
+    </script>
 </body>
 </html>

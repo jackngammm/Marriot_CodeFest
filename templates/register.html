@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Hotel Swipe App</title>
+    <title>Register - Hotel Swipe App</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"> <!-- Poppins Font -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, #5C0E1E, #3E0A14);
+            color: #f5f5f5;
             margin: 0;
             padding: 0;
             display: flex;
@@ -23,7 +24,7 @@
             to { opacity: 1; }
         }
         .container {
-            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 40px 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
@@ -33,6 +34,7 @@
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
+            color: black;
         }
         .option {
             margin: 20px 0;
@@ -95,55 +97,55 @@
         .back-button:hover {
             background: #C8102E;
         }
-        .otp-note {
-            font-size: 0.9em;
-            color: white; /* Change color to white */
-            margin-top: 5px; /* Margin for spacing */
-            text-decoration: underline; /* Underline the text */
-        }
-
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Login</h1>
+        <h1>Register</h1>
         <div class="option">
             <label>
-                <input type="radio" name="login-type" value="email" onclick="toggleLoginType(this)" checked> Email
+                <input type="radio" name="registration-type" value="email" onclick="toggleRegistrationType(this)"> Email & Username
             </label>
             <label>
-                <input type="radio" name="login-type" value="phone" onclick="toggleLoginType(this)"> Phone Number
+                <input type="radio" name="registration-type" value="phone" onclick="toggleRegistrationType(this)"> Phone Number
             </label>
         </div>
         
-        <div class="email-option">
-            <form method="POST" id="email-form" onsubmit="return validateEmail();">
+        <div class="email-option" style="display: none;">
+            <form method="POST" id="email-form">
+                <label for="username">Username:</label>
+                <input type="text" name="username" required>
                 <label for="email">Email:</label>
                 <input type="email" name="email" required>
                 <label for="password">Password:</label>
                 <input type="password" name="password" required>
-                <button type="submit">Login</button>
-                <div class="error" id="email-error" style="display: none;"></div>
+                <button type="submit">Register</button>
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
             </form>
         </div>
         
         <div class="phone-option" style="display: none;">
-            <form method="POST" id="phone-form" onsubmit="return validatePhone();">
+            <form method="POST" id="phone-form">
                 <label for="phone">Phone Number:</label>
                 <input type="text" name="phone" required>
                 <div class="otp-note">Sent OTP</div> <!-- Sent OTP message -->
                 <label for="otp">OTP Code:</label>
                 <input type="text" name="otp" placeholder="Enter OTP" required>
-                <button type="submit">Login</button>
-                <div class="error" id="phone-error" style="display: none;"></div>
+                <button type="submit">Register</button>
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
             </form>
         </div>
 
-        <button class="back-button" onclick="window.location.href='/'">Back to Home</button>
+        <!-- Button to redirect back to the login page -->
+        <button class="back-button" onclick="window.location.href='{{ url_for('login') }}'">Back to Login</button>
     </div>
 
     <script>
-        function toggleLoginType(radio) {
+        function toggleRegistrationType(radio) {
             const emailOption = document.querySelector('.email-option');
             const phoneOption = document.querySelector('.phone-option');
             
@@ -153,34 +155,6 @@
             } else {
                 emailOption.style.display = 'none';
                 phoneOption.style.display = 'block';
-            }
-        }
-
-        function validateEmail() {
-            const email = document.querySelector('[name="email"]').value;
-            const password = document.querySelector('[name="password"]').value;
-
-            if (email === 'user@user.com' && password === 'pass') {
-                window.location.href = '/preferences'; // Redirect to hotels page
-                return false; // Prevent form submission
-            } else {
-                document.getElementById('email-error').innerText = 'Invalid email or password.';
-                document.getElementById('email-error').style.display = 'block';
-                return false; // Prevent form submission
-            }
-        }
-
-        function validatePhone() {
-            const phone = document.querySelector('[name="phone"]').value;
-            const otp = document.querySelector('[name="otp"]').value;
-
-            if (phone === '123456789' && otp === '123456') {
-                window.location.href = '/preferences'; // Redirect to hotels page
-                return false; // Prevent form submission
-            } else {
-                document.getElementById('phone-error').innerText = 'Wrong OTP code.';
-                document.getElementById('phone-error').style.display = 'block';
-                return false; // Prevent form submission
             }
         }
     </script>

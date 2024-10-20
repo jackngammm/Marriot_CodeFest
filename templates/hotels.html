@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swipe Hotels - Hotel Swipe App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Include Font Awesome -->
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; 
+            align-items: center; 
             min-height: 100vh;
             background: linear-gradient(to right, #3E0A14, #5C0E1E);
             animation: fadeIn 1s ease;
@@ -22,41 +24,66 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5em; 
+            color: #f5f5f5;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
         .card {
-            width: 30%;
-            max-width: 800px;
-            height: auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: -150px; 
+            width: 500px; 
+            max-width: 90%; 
+            background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
             border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s; 
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); 
+        }
+        .card h2 {
+            font-size: 1.8em; 
+            color: #FF9800; 
+            margin: 0 0 10px; 
+        }
+        .card p {
+            color: #f5f5f5; 
+        }
+        .amenities {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .amenities div {
+            display: flex;
             align-items: center;
-            text-align: center;
-            padding: 30px;
-            margin: 50px 0 40px; /* Increased top and bottom margins */
-            transition: transform 0.3s, opacity 0.3s;
-            font-size: 1.2em;
+            margin: 5px 0;
+        }
+        .amenities i {
+            margin-right: 10px; /* Space between icon and text */
+            color: #FF9800; /* Icon color */
         }
         .buttons {
             display: flex;
-            justify-content: space-around;
-            width: 70%;
-            max-width: 800px;
-            margin-top: 30px;
+            justify-content: center;
+            gap: 20px; 
+            margin-top: 20px;
         }
         .button {
-            padding: 15px 30px;
+            padding: 15px 25px;
             font-size: 18px;
             font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin: 0 20px;
             transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .like {
             background: linear-gradient(to right, #4CAF50, #45A049);
@@ -75,20 +102,36 @@
             transform: translateY(-3px);
         }
         .view-liked {
-            background: linear-gradient(to right, #FF9800, #FF5722);
-            color: white;
-            margin-top: 40px;
-            padding: 15px 30px;
+            padding: 15px 25px;
             font-size: 18px;
             font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            background: linear-gradient(to right, #FF9800, #FF5722);
+            color: white;
             transition: background-color 0.3s, transform 0.3s;
         }
         .view-liked:hover {
-            background: linear-gradient(to right, #FF5722, #FF9800);
+            background: linear-gradient(to right, #FF9800, #FF5722);
             transform: translateY(-3px);
+        }
+        .back-preferences {
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(to right, #008CBA, #005F73);
+            color: white;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .back-preferences:hover {
+            background: linear-gradient(to right, #005F73, #008CBA);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
@@ -96,9 +139,10 @@
     <div class="card" id="hotelCard">Loading hotels...</div>
     <div class="buttons">
         <button class="button dislike" id="dislikeButton">Dislike</button>
+        <button class="view-liked" onclick="window.location.href='/liked_hotels'">Hotel Matches!</button>
+        <button class="back-preferences" onclick="window.location.href='/preferences'">Back to Preferences</button>
         <button class="button like" id="likeButton">Like</button>
     </div>
-    <button class="view-liked" onclick="window.location.href='/liked_hotels'">Hotel Matches</button>
 
     <script>
         const hotelList = JSON.parse('{{ hotels|tojson|safe }}');
@@ -117,17 +161,39 @@
 
         function displayHotel() {
             const card = document.getElementById('hotelCard');
-            if (currentIndex < hotelList.length) {
-                const hotel = hotelList[currentIndex];
-                card.innerHTML = `
-                    <div><img src="${getRandomImage()}" alt="Hotel Image" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 20px; object-fit: cover;"></div>
-                    <div><strong>${hotel['Hotel_Name']}</strong> - ${hotel['Location']} - $${hotel['Price_Per_Night']}</div>
-                    <div>Rating: ${hotel['Rating']} stars</div>
-                    <div>Amenities: ${hotel['Amenities']}</div>`;
-            } else {
-                card.textContent = "No more hotels!";
+                if (currentIndex < hotelList.length) {
+                    const hotel = hotelList[currentIndex];
+                    const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(hotel['Price_Per_Night']);
+                    
+                    card.innerHTML = `
+                        <div style="width: 100%;">
+                            <img src="${getRandomImage()}" alt="Hotel Image" style="width: 100%; height: 600px; border-radius: 10px; margin-bottom: 20px; object-fit: cover;">
+                        </div>
+                        <div style="padding: 15px; text-align: left; width: 100%;">
+                            <h2 style="margin: 0; font-size: 1.5em; color: #f5f5f5;">${hotel['Hotel_Name']}</h2>
+                            <p style="margin: 5px 0; color: #e0e0e0; font-size: 1em;"><strong>Location:</strong> ${hotel['Location']}</p>
+                            <p style="margin: 5px 0; color: #e0e0e0; font-size: 1em;">
+                                <strong>Price:</strong> <strong>${formattedPrice} / night</strong>
+                            </p>
+                            <p><strong>Rating:</strong>
+                                <span class="star-rating">
+                                    ${'<i class="fas fa-star" style="color: #FFD700;"></i>'.repeat(Math.floor(hotel['Rating']))} <!-- Filled stars -->
+                                    ${'<i class="far fa-star" style="color: #FFD700;"></i>'.repeat(5 - Math.floor(hotel['Rating']))} <!-- Empty stars -->
+                                </span>
+                            </p>
+                            <div class="amenities">
+                                <div><i class="fas fa-paw"></i><strong>Pet Friendly:</strong> ${hotel['Pet_Friendly']}</div>
+                                <div><i class="fas fa-business-time"></i><strong>Business Center:</strong> ${hotel['Business_Center_Available']}</div>
+                                <div><i class="fas fa-plane"></i><strong>Distance to Airport:</strong> ${hotel['Distance_to_Airport']} miles</div>
+                            </div>
+                        </div>`;
+                } else {
+                    card.textContent = "No more hotels!";
+                }
             }
-        }
+
+
+
 
         function likeHotel() {
             if (currentIndex < hotelList.length) {
